@@ -1,6 +1,14 @@
 # AES-Android
 <br/>A library to provide android aes encryption with c++
 
+### Setting up the dependency
+<br/>```implementation "com.android.encryption:aes:1.0.0"```
+
+### R8 and ProGuard settings
+<br/>```-keepclasseswithmembernames class * {
+    native <methods>;
+}```
+
 ### Feature
 <br/>Support AES/ECB AES/CBC AES/CTR encryption
 
