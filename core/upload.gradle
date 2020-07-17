@@ -1,0 +1,85 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+group = "com.android.encryption"
+version = "1.0.0" //版本
+
+def siteUrl = 'https://github.com/YoungBill/AES-Android.git'    // 项目主页
+def gitUrl = 'https://github.com/YoungBill/AES-Android.git' //  git
+def ARTIFACT_ID = "aes"
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+//    archives javadocJar
+    archives sourcesJar
+}
+
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            artifactId = ARTIFACT_ID
+
+            project {
+                packaging 'aar'
+                name 'A library to provide android aes encryption with c++'
+                url siteUrl
+
+                //用apache2.0
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                //开发者基本信息
+                developers {
+                    developer {
+                        id 'youngbill'
+                        name 'youngbill'
+                        email 'bainataochen@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+    /**
+     * 用户名和key，这两个信息一般会保存在local.properties里面，只保留在本地，不上传到仓库。
+     */
+    user = properties.getProperty("bintrayUser")
+    key = properties.getProperty("bintrayApiKey")
+    println user
+    println key
+    configurations = ['archives']
+    pkg {
+        repo = "maven"               //跟上面创建的Maven仓库名字保持一致
+        name = "Aes-Android"              //发布到JCenter上的项目名字
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
+}
